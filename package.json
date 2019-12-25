@@ -1,0 +1,31 @@
+{
+  "name": "kibana-go",
+  "version": "6.5.4",
+  "description": "Provides API to access Kibana assets",
+  "main": "index.js",
+  "scripts": {
+    "lint": "eslint",
+    "start": "plugin-helpers start",
+    "test:server": "plugin-helpers test_server",
+    "test:browser": "plugin-helpers test_browser",
+    "build": "plugin-helpers build",
+    "postinstall": "plugin-helpers postinstall"
+  },
+  "devDependencies": {
+    "@elastic/eslint-config-kibana": "0.0.2",
+    "@elastic/plugin-helpers": "^6.0.0",
+    "babel-eslint": "4.1.8",
+    "eslint": "1.10.3",
+    "eslint-plugin-mocha": "1.1.0"
+  },
+  "dependencies": {
+    "@elastic/numeral": "^2.3.2",
+    "boom": "^7.2.0",
+    "datemath-parser": "^1.0.5",
+    "elasticsearch": "^15.4.1",
+    "jstimezonedetect": "1.0.5",
+    "lodash": "3.10.1",
+    "moment": "^2.24.0",
+    "moment-timezone": "^0.5.23"
+  }
+}
