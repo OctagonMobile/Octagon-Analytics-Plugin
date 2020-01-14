@@ -26,16 +26,15 @@ createLegacyClass(MetricAggType).inherits(AggType);
 
 function MetricAggType(config) {
   MetricAggType.Super.call(this, config);
-
+  var that = this;
   // allow overriding any value on the prototype
   _.forOwn(
     config,
     function (val, key) {
       if (_.has(MetricAggType.prototype, key)) {
-        this[key] = val;
+        that[key] = val;
       }
-    },
-    this
+    }
   );
 }
 
