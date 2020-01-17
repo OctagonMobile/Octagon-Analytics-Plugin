@@ -313,12 +313,12 @@ class AggConfig {
 
   set type(type) {
     if (this.__typeDecorations) {
+      var that = this;
       _.forOwn(
         this.__typeDecorations,
         function(prop, name) {
-          delete this[name];
-        },
-        this
+          delete that[name];
+        }
       );
     }
 

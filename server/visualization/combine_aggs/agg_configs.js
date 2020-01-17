@@ -83,8 +83,7 @@ class AggConfigs extends IndexedArray {
             this.push(new AggConfig(this, state));
           });
         }
-      })
-      .commit();
+      });
   }
 
   setTimeRange(timeRange) {

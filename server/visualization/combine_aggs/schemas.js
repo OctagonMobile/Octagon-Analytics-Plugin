@@ -70,8 +70,7 @@ class Schemas {
           immutable: true,
           initialSet: group
         });
-      })
-      .commit();
+      });
   }
 }
 
