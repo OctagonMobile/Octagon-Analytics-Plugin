@@ -5,6 +5,17 @@ import { IndexedArray } from './combine_aggs/indexed_array';
 import dateMathParser from 'datemath-parser';
 import { AggConfig } from './combine_aggs/agg_config';
 import { aggTypes } from './combine_aggs/agg_types/agg_types';
+const bucketVisTypes = [
+  'pie' ,
+  'line' ,
+  'horizontal_bar' ,
+  'heatmap',
+  'area',
+  'table',
+  'histogram',
+  'tagcloud' ,
+  't4p-tagcloud'
+];
 
 export class VisualizationService {
   metricLabels = {
@@ -143,12 +154,7 @@ export class VisualizationService {
         });
       }
 
-      if (
-        parsedState.type === 'pie' ||
-        parsedState.type === 'histogram' ||
-        parsedState.type === 'tagcloud' ||
-        parsedState.type === 't4p-tagcloud'
-      ) {
+      if (bucketVisTypes.indexOf(parsedState.type)>=0) {
         // Need to put table headers in the response
         const pieAggs = parsedState.aggs.filter(
           ag => ag.type === 'sum' || ag.type === 'max' || (ag.type === 'avg' && ag.id === '1')
