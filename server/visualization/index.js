@@ -68,7 +68,10 @@ export default server => {
           }
           return postProc(visualization);
         })
-        .catch(error => reply(Boom.notFound(error)));
+        .catch(error => {
+          console.error(error);
+          reply(Boom.notFound(error))
+        });
     }
   });
 

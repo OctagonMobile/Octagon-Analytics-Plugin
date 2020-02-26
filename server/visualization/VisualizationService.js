@@ -103,6 +103,7 @@ export class VisualizationService {
   }
 
   checkForScriptedFields(response) {
+
     const tempFieldsArray = JSON.parse(response[0].attributes.fields);
     const fieldsArray = [];
     tempFieldsArray.forEach(field => {
@@ -372,17 +373,26 @@ export class VisualizationService {
     searchQueryDashboard,
     mapPrecision
   ) {
-    if (!searchSource) {
-      searchSource = JSON.parse(visualizationItem.attributes.kibanaSavedObjectMeta.searchSourceJSON);
-    }
+    console.log(JSON.stringify(visualizationItem.attributes,null,4));
+    console.log('=============================')    
 
     const aggsParsedJSON = JSON.parse(visualizationItem.attributes.visState);
+    if(aggsParsedJSON.type === 'input_control_vis'){
+      //Input control do not have search source in the searchSourceJSON
+      //It has multiple indice in visState.params.controls instead
+      
+      
+    }
+
+    if (!searchSource) {
+      searchSource = JSON.parse(visualizationItem.attributes.kibanaSavedObjectMeta.searchSourceJSON);      
+    }    
 
     return this.client.bulkGet(request, [{ type: 'index-pattern', id: searchSource.index }]).then(bulkResult => {
       const timeRange = this.getTimeRange(request);
       const indexPattern = bulkResult[0];
       visualizationItem.indexPattern = indexPattern;
-
+      console.log(JSON.stringify(bulkResult,null,4));
       const scriptedFieldsArray = this.checkForScriptedFields(bulkResult);
       const scriptedFieldObj = this.prepareScriptedFieldsObj(scriptedFieldsArray) || {};
 
