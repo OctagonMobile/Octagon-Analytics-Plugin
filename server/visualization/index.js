@@ -35,6 +35,7 @@ export default server => {
           )
           .then(body => {
             client.initCallWithRequest(req, 'msearch', { body }).then(response => {
+              
               visualizationService.injectMockedIndexPattern(visualization);
               visualizationService.visDataPostResponseProc(visualization, response.responses);
               return reply(response.responses);

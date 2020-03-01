@@ -5,6 +5,7 @@ import { IndexedArray } from './combine_aggs/indexed_array';
 import dateMathParser from 'datemath-parser';
 import { AggConfig } from './combine_aggs/agg_config';
 import { aggTypes } from './combine_aggs/agg_types/agg_types';
+import {getControlDataRequest} from './input_control_vis';
 
 export class VisualizationService {
   metricLabels = {
@@ -115,14 +116,16 @@ export class VisualizationService {
   }
 
   injectMockedIndexPattern(visualizationItem) {
-    visualizationItem.indexPattern.attributes.fields = JSON.parse(visualizationItem.indexPattern.attributes.fields);
-    visualizationItem.indexPattern = {
-      fields: new IndexedArray({
-        index: ['name'],
-        group: ['type'],
-        initialSet: visualizationItem.indexPattern.attributes.fields
-      })
-    };
+  if(visualizationItem.indexPattern){
+      visualizationItem.indexPattern.attributes.fields = JSON.parse(visualizationItem.indexPattern.attributes.fields);
+      visualizationItem.indexPattern = {
+        fields: new IndexedArray({
+          index: ['name'],
+          group: ['type'],
+          initialSet: visualizationItem.indexPattern.attributes.fields
+        })
+      };
+    }    
   }
 
   visDataPostResponseProc(visualization, response) {
@@ -372,18 +375,31 @@ export class VisualizationService {
     searchQueryPanel,
     searchQueryDashboard,
     mapPrecision
-  ) {
-    console.log(JSON.stringify(visualizationItem.attributes,null,4));
-    console.log('=============================')    
-
+  ) {        
     const aggsParsedJSON = JSON.parse(visualizationItem.attributes.visState);
     if(aggsParsedJSON.type === 'input_control_vis'){
       //Input control do not have search source in the searchSourceJSON
-      //It has multiple indice in visState.params.controls instead
-      
-      
+      //It has multiple indice in visState.params.controls instead      
+      const requestParts = getControlDataRequest(aggsParsedJSON);
+      const controls = aggsParsedJSON.params.controls;
+      var indices = controls.map(function(control){
+        return { type: 'index-pattern',id: control.indexPattern};
+      });
+      return this.client.bulkGet(request, indices).then((indexPatterns)=>{
+        return indexPatterns.map((ip)=>{
+          return { 
+            index: ip.attributes.title,
+            ignore_unavailable:true
+          };
+        })
+      }).then((ips)=>{
+          const finalRequest = ips.map((ip,index)=>{
+            return JSON.stringify(ip) + '\n' + JSON.stringify(requestParts[index]);
+          }).join('\n');          
+          return finalRequest;
+      })                 
     }
-
+    
     if (!searchSource) {
       searchSource = JSON.parse(visualizationItem.attributes.kibanaSavedObjectMeta.searchSourceJSON);      
     }    
@@ -391,8 +407,7 @@ export class VisualizationService {
     return this.client.bulkGet(request, [{ type: 'index-pattern', id: searchSource.index }]).then(bulkResult => {
       const timeRange = this.getTimeRange(request);
       const indexPattern = bulkResult[0];
-      visualizationItem.indexPattern = indexPattern;
-      console.log(JSON.stringify(bulkResult,null,4));
+      visualizationItem.indexPattern = indexPattern;      
       const scriptedFieldsArray = this.checkForScriptedFields(bulkResult);
       const scriptedFieldObj = this.prepareScriptedFieldsObj(scriptedFieldsArray) || {};
 
@@ -487,8 +502,7 @@ export class VisualizationService {
     searchQueryPanel,
     searchQueryDashboard
   ) {
-    const searchSourceJSON = JSON.parse(searchItem.attributes.kibanaSavedObjectMeta.searchSourceJSON);
-
+    const searchSourceJSON = JSON.parse(searchItem.attributes.kibanaSavedObjectMeta.searchSourceJSON);    
     return this.client
       .bulkGet(request, [
         {
