@@ -6,6 +6,18 @@ import dateMathParser from 'datemath-parser';
 import { AggConfig } from './combine_aggs/agg_config';
 import { aggTypes } from './combine_aggs/agg_types/agg_types';
 import {getControlDataRequest} from './input_control_vis';
+const bucketVisTypes = [
+  'pie' ,
+  'line' ,
+  'horizontal_bar' ,
+  'heatmap',
+  'area',
+  'table',
+  'histogram',
+  'tagcloud' ,
+  't4p-tagcloud'
+];
+
 
 export class VisualizationService {
   metricLabels = {
@@ -147,12 +159,7 @@ export class VisualizationService {
         });
       }
 
-      if (
-        parsedState.type === 'pie' ||
-        parsedState.type === 'histogram' ||
-        parsedState.type === 'tagcloud' ||
-        parsedState.type === 't4p-tagcloud'
-      ) {
+      if (bucketVisTypes.indexOf(parsedState.type)>=0) {
         // Need to put table headers in the response
         const pieAggs = parsedState.aggs.filter(
           ag => ag.type === 'sum' || ag.type === 'max' || (ag.type === 'avg' && ag.id === '1')
@@ -375,7 +382,10 @@ export class VisualizationService {
     searchQueryPanel,
     searchQueryDashboard,
     mapPrecision
-  ) {        
+  ) {    
+    if (!searchSource) {
+      searchSource = JSON.parse(visualizationItem.attributes.kibanaSavedObjectMeta.searchSourceJSON);
+    }
     const aggsParsedJSON = JSON.parse(visualizationItem.attributes.visState);
     if(aggsParsedJSON.type === 'input_control_vis'){
       //Input control do not have search source in the searchSourceJSON
@@ -404,8 +414,8 @@ export class VisualizationService {
       searchSource = JSON.parse(visualizationItem.attributes.kibanaSavedObjectMeta.searchSourceJSON);      
     }    
 
-    return this.client.bulkGet(request, [{ type: 'index-pattern', id: searchSource.index }]).then(bulkResult => {
-      const timeRange = this.getTimeRange(request);
+    return this.client.bulkGet(request, [{ type: 'index-pattern', id: searchSource.index }]).then(bulkResult => {      
+      const timeRange = this.getTimeRange(request);            
       const indexPattern = bulkResult[0];
       visualizationItem.indexPattern = indexPattern;      
       const scriptedFieldsArray = this.checkForScriptedFields(bulkResult);
@@ -503,6 +513,7 @@ export class VisualizationService {
     searchQueryDashboard
   ) {
     const searchSourceJSON = JSON.parse(searchItem.attributes.kibanaSavedObjectMeta.searchSourceJSON);    
+
     return this.client
       .bulkGet(request, [
         {
@@ -514,11 +525,12 @@ export class VisualizationService {
       .then(res => {
         let timestampProp;
         let rangeProp;
-        const result = res[0];
+        const result = res[0];                
         if (result.attributes.timeFieldName) {
+          timestampProp = result.attributes.timeFieldName;          
           rangeProp = {
             range: this.getQueryRange(request, result.attributes.timeFieldName)
-          };
+          };                  
         }
 
         const indexJSON = {
@@ -544,10 +556,10 @@ export class VisualizationService {
               }
             }
           ]
-        };
+        };                
 
-        queryJSON.query.bool.must.push(timestampProp ? rangeProp : searchQuery);
-
+        queryJSON.query.bool.must.push(timestampProp ? rangeProp : searchQuery);                
+        
         if (savedSearchFilters && savedSearchFilters.length) {
           savedSearchFilters.forEach(savedSearchFilter => {
             const savedSearchFilterObj = this.prepareVisualizationFilter(savedSearchFilter);
@@ -568,7 +580,7 @@ export class VisualizationService {
           if (searchQueryDashboardObj) {
             queryJSON.query.bool.must.push(searchQueryDashboardObj);
           }
-        }
+        }        
         return JSON.stringify(indexJSON) + '\n' + JSON.stringify(queryJSON);
       });
   }
