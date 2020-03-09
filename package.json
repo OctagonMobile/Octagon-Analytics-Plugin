@@ -1,5 +1,5 @@
 {
-  "name": "kibana-go",
+  "name": "octagon-analytics",
   "version": "6.5.4",
   "description": "Provides API to access Kibana assets",
   "main": "index.js",

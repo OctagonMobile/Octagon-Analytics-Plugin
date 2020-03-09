@@ -1,4 +1,4 @@
-# Kibana Go
+# Octagon Analytics Plugin
 
 This plugin of Kibana allows you to access Kibana meta objects (Saved Searches, Dashboard, Visualization) and extend customization APIs functionality. The main purpose is to display Kibana Dashboard in native mobile apps like on iPad.
 
@@ -118,8 +118,8 @@ End points:
 Configuration
 
 ```
-kibana-go.imageProxy.enabled: true
-kibana-go.imageProxy.imageApiServer: 'http://xxx.yyy.zzz.xxx:5513'
+octagon-analytics.imageProxy.enabled: true
+octagon-analytics.imageProxy.imageApiServer: 'http://xxx.yyy.zzz.xxx:5513'
 ```
 
 ## Development
