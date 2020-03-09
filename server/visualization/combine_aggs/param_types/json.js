@@ -54,6 +54,7 @@ JsonParamType.prototype.write = function (aggConfig, output) {
   try {
     paramJson = JSON.parse(param);
   } catch (err) {
+    console.error(err);
     return;
   }
 

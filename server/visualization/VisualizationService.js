@@ -5,6 +5,7 @@ import { IndexedArray } from './combine_aggs/indexed_array';
 import dateMathParser from 'datemath-parser';
 import { AggConfig } from './combine_aggs/agg_config';
 import { aggTypes } from './combine_aggs/agg_types/agg_types';
+import {getControlDataRequest} from './input_control_vis';
 const bucketVisTypes = [
   'pie' ,
   'line' ,
@@ -16,6 +17,7 @@ const bucketVisTypes = [
   'tagcloud' ,
   't4p-tagcloud'
 ];
+
 
 export class VisualizationService {
   metricLabels = {
@@ -114,6 +116,7 @@ export class VisualizationService {
   }
 
   checkForScriptedFields(response) {
+
     const tempFieldsArray = JSON.parse(response[0].attributes.fields);
     const fieldsArray = [];
     tempFieldsArray.forEach(field => {
@@ -125,14 +128,16 @@ export class VisualizationService {
   }
 
   injectMockedIndexPattern(visualizationItem) {
-    visualizationItem.indexPattern.attributes.fields = JSON.parse(visualizationItem.indexPattern.attributes.fields);
-    visualizationItem.indexPattern = {
-      fields: new IndexedArray({
-        index: ['name'],
-        group: ['type'],
-        initialSet: visualizationItem.indexPattern.attributes.fields
-      })
-    };
+  if(visualizationItem.indexPattern){
+      visualizationItem.indexPattern.attributes.fields = JSON.parse(visualizationItem.indexPattern.attributes.fields);
+      visualizationItem.indexPattern = {
+        fields: new IndexedArray({
+          index: ['name'],
+          group: ['type'],
+          initialSet: visualizationItem.indexPattern.attributes.fields
+        })
+      };
+    }    
   }
 
   visDataPostResponseProc(visualization, response) {
@@ -381,14 +386,38 @@ export class VisualizationService {
     if (!searchSource) {
       searchSource = JSON.parse(visualizationItem.attributes.kibanaSavedObjectMeta.searchSourceJSON);
     }
-
     const aggsParsedJSON = JSON.parse(visualizationItem.attributes.visState);
+    if(aggsParsedJSON.type === 'input_control_vis'){
+      //Input control do not have search source in the searchSourceJSON
+      //It has multiple indice in visState.params.controls instead      
+      const requestParts = getControlDataRequest(aggsParsedJSON);
+      const controls = aggsParsedJSON.params.controls;
+      var indices = controls.map(function(control){
+        return { type: 'index-pattern',id: control.indexPattern};
+      });
+      return this.client.bulkGet(request, indices).then((indexPatterns)=>{
+        return indexPatterns.map((ip)=>{
+          return { 
+            index: ip.attributes.title,
+            ignore_unavailable:true
+          };
+        })
+      }).then((ips)=>{
+          const finalRequest = ips.map((ip,index)=>{
+            return JSON.stringify(ip) + '\n' + JSON.stringify(requestParts[index]);
+          }).join('\n');          
+          return finalRequest;
+      })                 
+    }
+    
+    if (!searchSource) {
+      searchSource = JSON.parse(visualizationItem.attributes.kibanaSavedObjectMeta.searchSourceJSON);      
+    }    
 
     return this.client.bulkGet(request, [{ type: 'index-pattern', id: searchSource.index }]).then(bulkResult => {      
       const timeRange = this.getTimeRange(request);            
       const indexPattern = bulkResult[0];
-      visualizationItem.indexPattern = indexPattern;
-
+      visualizationItem.indexPattern = indexPattern;      
       const scriptedFieldsArray = this.checkForScriptedFields(bulkResult);
       const scriptedFieldObj = this.prepareScriptedFieldsObj(scriptedFieldsArray) || {};
 
