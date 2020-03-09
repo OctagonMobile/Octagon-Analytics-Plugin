@@ -118,8 +118,8 @@ End points:
 Configuration
 
 ```
-kibana-go.imageProxy.enabled: true
-kibana-go.imageProxy.imageApiServer: 'http://xxx.yyy.zzz.xxx:5513'
+octagon-analytics.imageProxy.enabled: true
+octagon-analytics.imageProxy.imageApiServer: 'http://xxx.yyy.zzz.xxx:5513'
 ```
 
 ## Development

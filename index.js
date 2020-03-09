@@ -2,7 +2,7 @@ import APIRegister from './server/api';
 
 export default function(kibana) {
   return new kibana.Plugin({
-    name: 'kibana-go',
+    name: 'octagon-analytics',
     require: [],
 
     config(Joi) {

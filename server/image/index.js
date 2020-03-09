@@ -2,7 +2,7 @@ import { ImageService } from './ImageService';
 import { Client } from '../utils/Client';
 
 export default server => {
-  const pluginName = 'kibana-go';
+  const pluginName = 'octagon-analytics';
   const basePath = '/api/imageproxy';
   const client = new Client(server);
   const imageService = new ImageService(client, pluginName);
