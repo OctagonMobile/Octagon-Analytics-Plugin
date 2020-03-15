@@ -137,3 +137,9 @@ octagon-analytics.imageProxy.imageApiServer: 'http://xxx.yyy.zzz.xxx:5513'
 - Get the package from your Build folder
 - Install the plugin on your Kibana instance: `bin/kibana-plugin install <package name or URL>`
 
+## License<a id="license"></a>
+MIT
+
+Kibana is a trademark of Elasticsearch BV, registered in the US and in other countries.
+Elasticsearch is a trademark of Elasticsearch BV, registered in the US and in other countries.
+
