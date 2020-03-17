@@ -452,15 +452,17 @@ export class VisualizationService {
           }
         }
       }
+      let mustFilters = [];
+      
+      //Only append range filter when timeFieldName is available
+      if(indexPattern.attributes.timeFieldName){
+        mustFilters.push({range:this.getQueryRange(request, indexPattern.attributes.timeFieldName)})         
+      }      
 
       const queryJSON = {
         query: {
           bool: {
-            must: [
-              {
-                range: this.getQueryRange(request, indexPattern.attributes.timeFieldName)
-              }
-            ],
+            must: mustFilters,
             must_not: [],
             filter: []
           }
