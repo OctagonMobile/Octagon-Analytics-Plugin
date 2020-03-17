@@ -38,7 +38,7 @@ import { geoCentroidMetricAgg } from './metrics/geo_centroid';
 import { dateHistogramBucketAgg } from './buckets/date_histogram';
 import { histogramBucketAgg } from './buckets/histogram';
 import { rangeBucketAgg } from './buckets/range';
-// import { dateRangeBucketAgg } from './buckets/date_range';
+import { dateRangeBucketAgg } from './buckets/date_range';
 // import { ipRangeBucketAgg } from './buckets/ip_range';
 import { termsBucketAgg } from './buckets/terms';
 // import { filterBucketAgg } from './buckets/filter';
@@ -78,7 +78,7 @@ const aggs = {
     dateHistogramBucketAgg,
     histogramBucketAgg,
     rangeBucketAgg,
-    // dateRangeBucketAgg,
+    dateRangeBucketAgg,
     // ipRangeBucketAgg,
     termsBucketAgg,
     // filterBucketAgg,

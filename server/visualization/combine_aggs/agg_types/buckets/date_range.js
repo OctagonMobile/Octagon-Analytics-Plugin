@@ -18,23 +18,24 @@
  */
 
 import { dateRange } from '../../utils/date_range';
-import '../../directives/validate_date_math';
-import '../../directives/documentation_href';
+// import '../../directives/validate_date_math';
+// import '../../directives/documentation_href';
 import { BucketAggType } from './_bucket_agg_type';
-import { createFilterDateRange } from './create_filter/date_range';
-import { fieldFormats } from '../../registry/field_formats';
-import dateRangesTemplate from '../controls/date_ranges.html';
+// import { createFilterDateRange } from './create_filter/date_range';
+
+// import dateRangesTemplate from '../controls/date_ranges.html';
 
 export const dateRangeBucketAgg = new BucketAggType({
   name: 'date_range',
   title: 'Date Range',
-  createFilter: createFilterDateRange,
-  getKey: function (bucket, key, agg) {
-    const formatter = agg.fieldOwnFormatter('text', fieldFormats.getDefaultInstance('date'));
-    return dateRange.toString(bucket, formatter);
+  createFilter: function(){},
+  getKey: function (bucket, key, agg) { 
+    throw 'Not implemented'   ;
+    return dateRange.toString(bucket);
   },
   getFormat: function () {
-    return fieldFormats.getDefaultInstance('string');
+    throw 'Not implemented'   ;
+    return '';
   },
   makeLabel: function (aggConfig) {
     return aggConfig.getFieldDisplayName() + ' date ranges';
@@ -56,7 +57,7 @@ export const dateRangeBucketAgg = new BucketAggType({
           to: 'now'
         }
       ],
-      editor: dateRangesTemplate
+      editor: ''
     }
   ]
 });
