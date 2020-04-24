@@ -65,12 +65,17 @@ export class VisualizationService {
     switch (filterObj.filterType) {
       case 'terms':
         if (filterObj.filterField && filterObj.filterValue) {
-          let filterWord = typeof filterObj.filterValue === 'object' ? 'terms' : 'match_phrase';
-          return {
-            [filterWord]: {
-              [filterObj.filterField]: filterObj.filterValue
-            }
-          };
+          if( filterObj.filterValue instanceof Array){
+            return filterObj.filterValue.map(function(val){
+              let filterWord = typeof val === 'object' ? 'terms' : 'match_phrase';
+          
+              return {
+                [filterWord]: {
+                  [filterObj.filterField]: val
+                }
+              }
+            })
+          }          
         }
         break;
       case 'range':
