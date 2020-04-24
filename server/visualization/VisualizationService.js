@@ -75,6 +75,15 @@ export class VisualizationService {
                 }
               }
             })
+          }
+          else{
+              let filterWord = typeof val === 'object' ? 'terms' : 'match_phrase';
+          
+              return {
+                [filterWord]: {
+                  [filterObj.filterField]: filterObj.filterValue
+                }
+              }
           }          
         }
         break;
