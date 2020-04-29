@@ -61,30 +61,17 @@ export class VisualizationService {
     return scriptedFieldsObj;
   }
 
-  prepareVisualizationFilter(filterObj) {
+  prepareVisualizationFilter(filterObj) {    
     switch (filterObj.filterType) {
       case 'terms':
-        if (filterObj.filterField && filterObj.filterValue) {
-          if( filterObj.filterValue instanceof Array){
-            return filterObj.filterValue.map(function(val){
-              let filterWord = typeof val === 'object' ? 'terms' : 'match_phrase';
-          
-              return {
-                [filterWord]: {
-                  [filterObj.filterField]: val
-                }
-              }
-            })
-          }
-          else{
-              let filterWord = typeof val === 'object' ? 'terms' : 'match_phrase';
+        if (filterObj.filterField && filterObj.filterValue) {          
+              let filterWord = typeof filterObj.filterValue === 'object' ? 'terms' : 'match_phrase';
           
               return {
                 [filterWord]: {
                   [filterObj.filterField]: filterObj.filterValue
                 }
-              }
-          }          
+              }            
         }
         break;
       case 'range':
@@ -488,10 +475,10 @@ export class VisualizationService {
         aggs: aggsDsl || {},
         script_fields: scriptedFieldObj
       };
-
+      
       if (visualizationFilters && visualizationFilters.length) {
         visualizationFilters.forEach(visualizationFilter => {
-          let visualizationFilterObj = this.prepareVisualizationFilter(visualizationFilter);
+          let visualizationFilterObj = this.prepareVisualizationFilter(visualizationFilter);          
           if (visualizationFilterObj) {
             visualizationFilter.isFilterInverted
               ? queryJSON.query.bool.must_not.push(visualizationFilterObj)
@@ -578,7 +565,7 @@ export class VisualizationService {
         
         if (savedSearchFilters && savedSearchFilters.length) {
           savedSearchFilters.forEach(savedSearchFilter => {
-            const savedSearchFilterObj = this.prepareVisualizationFilter(savedSearchFilter);
+            const savedSearchFilterObj = this.prepareVisualizationFilter(savedSearchFilter);            
             savedSearchFilter.isFilterInverted && savedSearchFilterObj
               ? queryJSON.query.bool.must_not.push(savedSearchFilterObj)
               : queryJSON.query.bool.must.push(savedSearchFilterObj);
