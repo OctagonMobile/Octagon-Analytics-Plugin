@@ -33,7 +33,7 @@ export default server => {
             searchQueryDashboard,
             mapPrecision
           )
-          .then(body => {
+          .then(body => {            
             client.initCallWithRequest(req, 'msearch', { body }).then(response => {
               
               visualizationService.injectMockedIndexPattern(visualization);

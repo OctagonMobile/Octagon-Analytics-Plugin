@@ -19,20 +19,11 @@
 
 import _ from 'lodash';
 import { MetricAggType } from './metric_agg_type';
-import topSortEditor from '../controls/top_sort.html';
-import aggregateAndSizeEditor from '../controls/top_aggregate_and_size.html';
-import { aggTypeFieldFilters } from '../param_types/filter';
 
 const isNumber = function (type) {
   return type === 'number';
 };
 
-aggTypeFieldFilters.addFilter((field, fieldParamType, aggConfig, vis) => {
-  if (aggConfig.type.name !== 'top_hit' || vis.type.name === 'table' || vis.type.name === 'metric') {
-    return true;
-  }
-  return field.type === 'number';
-});
 
 export const topHitMetricAgg = new MetricAggType({
   name: 'top_hits',
@@ -75,7 +66,7 @@ export const topHitMetricAgg = new MetricAggType({
     {
       name: 'aggregate',
       type: 'optioned',
-      editor: aggregateAndSizeEditor,
+      editor: '',
       options: [
         {
           display: 'Min',
@@ -149,7 +140,7 @@ export const topHitMetricAgg = new MetricAggType({
       name: 'sortOrder',
       type: 'optioned',
       default: 'desc',
-      editor: topSortEditor,
+      editor: '',
       options: [{ display: 'Descending', val: 'desc' }, { display: 'Ascending', val: 'asc' }],
       write(agg, output) {
         const sortField = agg.params.sortField;
