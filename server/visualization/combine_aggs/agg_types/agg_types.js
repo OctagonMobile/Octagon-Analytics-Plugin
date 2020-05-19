@@ -24,7 +24,7 @@ import { sumMetricAgg } from './metrics/sum';
 import { medianMetricAgg } from './metrics/median';
 import { minMetricAgg } from './metrics/min';
 import { maxMetricAgg } from './metrics/max';
-// import { topHitMetricAgg } from './metrics/top_hit';
+import { topHitMetricAgg } from './metrics/top_hit';
 // import { stdDeviationMetricAgg } from './metrics/std_deviation';
 import { cardinalityMetricAgg } from './metrics/cardinality';
 // import { percentilesMetricAgg } from './metrics/percentiles';
@@ -62,7 +62,7 @@ const aggs = {
     cardinalityMetricAgg,
     // percentilesMetricAgg,
     // percentileRanksMetricAgg,
-    // topHitMetricAgg,
+    topHitMetricAgg,
     // derivativeMetricAgg,
     // cumulativeSumMetricAgg,
     // movingAvgMetricAgg,
