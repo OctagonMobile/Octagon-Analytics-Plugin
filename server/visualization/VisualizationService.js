@@ -210,12 +210,12 @@ export class VisualizationService {
         response[0].hits.hits = tempArrayMap;
       }
 
-      if (parsedState.type === 'metric') {
+      if (parsedState.type === 'metric') {        
         if (!response[0].aggregations) {
           response[0].aggregations = {};
         }
         response[0].aggregations.metrics = [];
-        if (parsedState.aggs.length) {
+        if (parsedState.aggs.length === 1) {
           parsedState.aggs.forEach(aggsItem => {
             const tempObj = {
               id: aggsItem.id,
@@ -241,6 +241,25 @@ export class VisualizationService {
             delete response[0].aggregations[aggsItem.id];
             response[0].aggregations.metrics.push(tempObj);
           });
+        }
+        else if(parsedState.aggs.length === 2 && parsedState.aggs[1].schema === 'group')
+        {
+          response[0].aggregations.metrics = response[0].aggregations['2'].buckets.map((bucket)=>{
+            if(parsedState.aggs[0].type === 'count'){
+              return {
+                label: bucket.key,
+                value: bucket.doc_count
+              }
+            }
+            else{
+              return {
+                label: bucket.key,
+                value: bucket['1'].value
+              }
+            }
+            
+          });
+
         }
       }
 
