@@ -209,13 +209,19 @@ export class VisualizationService {
         response[0].hits.hits = [];
         response[0].hits.hits = tempArrayMap;
       }
-
+      // console.log(response[0].aggregations['3'].buckets);
       if (parsedState.type === 'metric') {        
         if (!response[0].aggregations) {
           response[0].aggregations = {};
         }
         response[0].aggregations.metrics = [];
-        if (parsedState.aggs.length === 1) {
+
+        var aggs = Object.values(parsedState.aggs);
+        var groupAgg = _.find(aggs,ag=>{
+          return ag.schema === 'group';
+        })
+        
+        if (!groupAgg) {
           parsedState.aggs.forEach(aggsItem => {
             const tempObj = {
               id: aggsItem.id,
@@ -242,22 +248,30 @@ export class VisualizationService {
             response[0].aggregations.metrics.push(tempObj);
           });
         }
-        else if(parsedState.aggs.length === 2 && parsedState.aggs[1].schema === 'group')
+        else
         {
-          response[0].aggregations.metrics = response[0].aggregations['2'].buckets.map((bucket)=>{
-            if(parsedState.aggs[0].type === 'count'){
-              return {
-                label: bucket.key,
-                value: bucket.doc_count
+          response[0].aggregations.metrics = []; 
+          response[0].aggregations[groupAgg.id].buckets.forEach((bucket)=>{
+            parsedState.aggs.forEach(agg=>{
+              if(agg.schema !== 'group'){
+                if(agg.type === 'count'){
+                  response[0].aggregations.metrics.push( {
+                    id:agg.id,
+                    type:agg.type,
+                    label: bucket.key,
+                    value: bucket.doc_count
+                  })
+                }
+                else{
+                  response[0].aggregations.metrics.push( {
+                    id:agg.id,
+                    type:agg.type,
+                    label: bucket.key,
+                    value: bucket[agg.id].value
+                  });
+                }
               }
-            }
-            else{
-              return {
-                label: bucket.key,
-                value: bucket['1'].value
-              }
-            }
-            
+            });                        
           });
 
         }
